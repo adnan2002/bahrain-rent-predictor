@@ -5,7 +5,7 @@ predict monthly rent (BHD) from propertyfinder.bh listings.
 
 **Metric:** Mean Absolute Error (MAE) · **Leaderboard score:** 86.5 (previous best: 87)
 
-The full solution lives in **`final_solution_simplified.ipynb`** — a readable,
+The full solution lives in **`final.ipynb`** — a readable,
 heavily-commented notebook that walks through the entire pipeline:
 
 1. **Clean the target** — drop exactly the 17 data-error rows (`rent > 10,000`);
@@ -19,14 +19,14 @@ heavily-commented notebook that walks through the entire pipeline:
    LightGBM), 5 folds × 3 seeds = 15 fits each; XGBoost tuned with Optuna
 5. **Blending** — SLSQP-optimized convex weights in BHD space + premium-segment
    calibration (×~1.02 above 900 BHD)
-6. **Submission** — `submission_simplified.csv`
+6. **Submission** — `final_submission.csv`
 
 ## Repository layout
 
 | Path | Purpose |
 |---|---|
-| `final_solution_simplified.ipynb` | the complete pipeline, documented end to end |
-| `data.csv` / `test.csv` / `sample_submission.csv` | competition data |
+| `final.ipynb` | the complete pipeline, documented end to end |
+| `data.csv` / `test.csv` / `final_submission.csv` | competition data |
 | `final_config.json` | the validated recipe (feature lists, rent cap, smoothing) |
 | `feature_pipeline.py` | all row-local transforms + leak-safe fold statistics |
 | `distance_features.py` | coastline / CBD / airport / causeway / school / mall distances |
@@ -66,11 +66,11 @@ scripts instead:
 ## Full run
 
 ```bash
-jupyter nbconvert --to notebook --execute final_solution_simplified.ipynb
+jupyter nbconvert --to notebook --execute final.ipynb
 ```
 
 or open the notebook in Jupyter and *Run All*. The output is
-`submission_simplified.csv` (gitignored).
+`final_submission.csv` (gitignored).
 
 ## Offline geocoding (no API key required)
 
