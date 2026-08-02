@@ -1,0 +1,188 @@
+{
+  "clean": {
+    "rent_cap": 10000
+  },
+  "null": {
+    "amenities_mode": "knn",
+    "avail_impute": true
+  },
+  "te": [
+    "te_area",
+    "te_area_ptype",
+    "te_agency"
+  ],
+  "m_smooth": 30,
+  "y_transform": "log1p",
+  "num_feats": [
+    "size_sqm",
+    "beds_num",
+    "baths_num",
+    "sqm_per_bedroom",
+    "sqm_per_bathroom",
+    "beds_per_sqm",
+    "baths_per_sqm",
+    "Amenities",
+    "Amenities_missing",
+    "beds_is_studio",
+    "beds_has_maid",
+    "beds_is_plus",
+    "baths_is_plus",
+    "Agent_listing_count",
+    "Agency_listing_count",
+    "area_listing_count",
+    "latitude",
+    "longitude",
+    "dist_to_coastline_km",
+    "dist_to_manama_cbd_km",
+    "dist_to_airport_km",
+    "dist_to_causeway_km",
+    "dist_to_nearest_international_school_km",
+    "dist_to_nearest_mall_km",
+    "is_private_pool",
+    "is_private_garden",
+    "is_penthouse",
+    "has_maid_room",
+    "is_sea_view",
+    "has_beach_access",
+    "is_pet_friendly",
+    "is_brand_new",
+    "has_housekeeping",
+    "has_balcony",
+    "has_gym",
+    "has_wifi",
+    "is_compound",
+    "has_parking",
+    "has_terrace",
+    "is_high_floor",
+    "is_renovated",
+    "is_duplex",
+    "has_walk_in_closet",
+    "navy_approved",
+    "is_first_resident",
+    "furnishing_level",
+    "luxury_tone_score",
+    "has_tower",
+    "lat_fine",
+    "lng_fine",
+    "floor_num",
+    "has_floor_num",
+    "n_schools_within_2km",
+    "n_malls_within_3km",
+    "is_freehold_zone",
+    "is_artificial_island",
+    "dist_to_coastline_bldg_km",
+    "dist_to_manama_cbd_bldg_km",
+    "dist_to_airport_bldg_km",
+    "dist_to_causeway_bldg_km",
+    "dist_to_nearest_international_school_bldg_km",
+    "dist_to_nearest_mall_bldg_km",
+    "n_supermarket_within_2km",
+    "n_food_within_2km",
+    "n_school_all_within_2km",
+    "n_healthcare_within_2km",
+    "n_fitness_within_2km",
+    "dist_to_nearest_beach_km",
+    "te_area",
+    "te_area_ptype",
+    "te_agency"
+  ],
+  "cat_feats": [
+    "Property_type",
+    "Include_w_e",
+    "Area",
+    "Governorate",
+    "Agency",
+    "view_type",
+    "tower"
+  ],
+  "ext_note": "ext: POI counts only",
+  "final_lgb_params": {
+    "objective": "l1",
+    "metric": "l1",
+    "verbosity": -1,
+    "n_jobs": -1,
+    "max_bin": 127,
+    "learning_rate": 0.06336060201608548,
+    "num_leaves": 54,
+    "min_child_samples": 11,
+    "subsample": 0.9465438786450396,
+    "colsample_bytree": 0.5447991030729846,
+    "reg_alpha": 0.0075591206641849144,
+    "reg_lambda": 0.0010591491747863968
+  },
+  "cv_summary": {
+    "LGB tuned 5x2": 90.51,
+    "XGB 5fold": 90.19,
+    "LGB+XGB average": 89.29,
+    "final_clean": "rent_cap=10000 (was 8000 in the screening run)"
+  },
+  "clean_note": "Drop only the 17 data-error rows (rent > 10,000). Lower caps looked better in capped-eval CV (down to 77 MAE at cap=1500) but that is metric gaming: under honest evaluation (train capped, validate on the full legit distribution) every lower cap is worse (95.3 -> 101.1). The test set contains premium listings; trees cannot extrapolate to rents never seen in training. Winsorize (110.6) and URL-dedupe (97.8) also lose.",
+  "honest_cv_summary": {
+    "protocol": "5-fold x 2 seeds; train folds capped, validation folds = all rows with rent<=10k",
+    "winner": "rent_cap=10000 (17 rows) \u2014 full MAE 95.31, premium-band (>1500) MAE 769.0"
+  },
+  "modeling": {
+    "final_model": "16-learner fold-bagged blend (LightGBM/XGBoost/CatBoost; log1p + raw-quantile/absolute-error targets; 5 folds x 3-6 seeds), SLSQP-optimized convex weights, premium-segment calibration (x1.024 where pred>900)",
+    "dominant_learner": "v3 XGBoost (extended features + interactions, 6 seeds) \u2014 88.7% blend weight, OOF 88.11",
+    "oof_mae": {
+      "blend_16learner_honest_blendCV": 86.71,
+      "with_premium_calibration_honest": 86.39,
+      "fitted_on_full_oof": 86.21
+    },
+    "progression": {
+      "previous_best": 89.5,
+      "v1_blend": 88.67,
+      "v2_blend": 88.62,
+      "v3_blend": 87.06,
+      "final_calibrated": 86.21
+    },
+    "submission": "submission_ensemble.csv",
+    "reproduction": "modeling_final.npz (OOF/test preds + weights) + calibration.npz"
+  },
+  "feature_lab": {
+    "method": "fast fixed LightGBM judge, 5-fold leak-safe CV, ~90s per variant (25+ experiments)",
+    "winners": {
+      "kw100 title keyword one-hot (replaces TF-IDF SVD)": -1.74,
+      "te_area_ppsqm / te_areapt_ppsqm (log rent-per-sqm encodings)": -0.7,
+      "geo extras (coast x sea-view, rotated coords)": -0.2,
+      "te_subarea (sub-area target encoding)": -0.11
+    },
+    "rejected": [
+      "bigrams",
+      "URL tokens",
+      "one-hot categoricals",
+      "grid cells",
+      "POI ratings",
+      "POI radii variants",
+      "month sin/cos",
+      "avail buckets",
+      "rel-size ratios",
+      "tower supply counts",
+      "beds as categorical",
+      "te_agent",
+      "area_main",
+      "kw count-encoding",
+      "kw75/150/200"
+    ],
+    "judge_mae": {
+      "v3_baseline": 95.93,
+      "final_set": 93.01
+    }
+  },
+  "modeling_v4": {
+    "features": "v3 set minus SVD-8, plus kw100 + ppsqm trio + geo trio + te_subarea (203 total, 8 cat)",
+    "oof_mae": {
+      "xgb_log_single": 86.67,
+      "blend_honest_CV": 85.17,
+      "blend_calibrated_honest_CV": 84.92,
+      "blend_calibrated_fitted": 84.77
+    },
+    "blend_weights": {
+      "xgb_log": 0.864,
+      "cb_log": 0.109,
+      "lgbq": 0.027
+    },
+    "calibration": "x1.0194 where pred > 900",
+    "submission": "submission_v4.csv"
+  }
+}
