@@ -1,0 +1,26 @@
+{
+  "artifact": "bahrain_rent_model.joblib",
+  "size_mb": 53.3,
+  "model_rows": 10558,
+  "features": 203,
+  "learners": [
+    "lgb_log",
+    "xgb_log",
+    "cb_log",
+    "lgbq"
+  ],
+  "seed_models_per_learner": 3,
+  "blend_weights": {
+    "lgb_log": 0.0,
+    "xgb_log": 0.825,
+    "cb_log": 0.087,
+    "lgbq": 0.088
+  },
+  "calibration_factor": 1.0185,
+  "vs_notebook_submission": {
+    "mae_bhd": 11.68,
+    "correlation": 0.9983
+  },
+  "elapsed_s": 405,
+  "oof_mae": 85.11
+}

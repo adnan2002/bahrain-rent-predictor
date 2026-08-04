@@ -1,0 +1,15 @@
+# streamlit app runtime (the root requirements.txt covers the pipeline itself)
+streamlit>=1.40
+joblib>=1.4
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+lightgbm>=4.3
+xgboost>=2.0
+catboost>=1.2
+hijridate>=2.3.0
+holidays>=0.101
+shapely>=2.0
+pyproj>=3.6
+requests>=2.31
+python-dotenv>=1.0
